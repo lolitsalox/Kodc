@@ -27,4 +27,4 @@ setup:
 	@mkdir $(OBJDIR)
 
 clean:
-	del /s *.o
+	rm -r lib/*.o
