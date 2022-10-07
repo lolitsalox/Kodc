@@ -6,9 +6,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-// TODO: understand from parsing the function, what type it should return 
-// TODO: (find the return statements and check if they all return the same type)
-
 astVariable_t* lookupVar(scope_t* scope, char* name) {
     if (scope->mom) {
         astVariable_t* var = lookupVar(scope->mom, name);
@@ -123,9 +120,6 @@ ast_t* VisitorVisitFunction(visitor_t* self, astFunction_t* node, scope_t* scope
         node->value->children->items[i] = self->Visit(self, child, node->scope);
         child = node->value->children->items[i];
     }
-
-    // TODO: Verify return type
-
 
     // * To check the allocations, uncomment
     printf("function %s:\n", node->name);
