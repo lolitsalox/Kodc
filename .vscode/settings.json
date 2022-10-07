@@ -1,0 +1,30 @@
+{
+    "files.associations": {
+        "token.h": "c",
+        "stdio.h": "c",
+        "error.h": "c",
+        "stdlib.h": "c",
+        "lexer.h": "c",
+        "io.h": "c",
+        "stddef.h": "c",
+        "string.h": "c",
+        "stdbool.h": "c",
+        "ctype.h": "c",
+        "parser.h": "c",
+        "ast.h": "c",
+        "visitor.h": "c",
+        "list.h": "c",
+        "types.h": "c",
+        "compare": "c",
+        "type_traits": "c",
+        "scope.h": "c"
+    },
+    "makefile.launchConfigurations": [
+        {
+            "cwd": "d:\\kod\\kodc",
+            "binaryPath": "d:\\kod\\kodc\\kod.exe",
+            "binaryArgs": []
+        }
+    ],
+    "C_Cpp.errorSquiggles": "Disabled"
+}
