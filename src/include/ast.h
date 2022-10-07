@@ -17,11 +17,17 @@ typedef enum astType_t {
     AST_FUNCTION,    
     AST_ASSIGNMENT,    
     AST_VARIABLE,
+    AST_STATEMENT,
     AST_INT,
     AST_FLOAT,
     AST_STRING,
     AST_LIST,
 } astType_t;
+
+typedef enum statementType_t {
+    STATEMENT_RETURN,
+    STATEMENT_UNKNOWN,
+} statementType_t;
 
 typedef struct dtypeInfo_t {
     dType_t dtype;    
@@ -41,6 +47,23 @@ void AST(ast_t* self, astType_t type);
 ast_t* newAST(astType_t type);
 
 char* astTypeToStr(astType_t type);
+
+
+// ******************************************* //
+// * STATEMENT
+typedef struct astStatement_t astStatement_t;
+struct astStatement_t {
+    ast_t base;
+    statementType_t stype;
+};
+
+void ASTStatement(astStatement_t* self, statementType_t stype);
+astStatement_t* newASTStatement(statementType_t stype);
+
+char* statementTypeToStr(statementType_t type);
+statementType_t strToStatementType(char* str);
+// ******************************************* //
+
 
 // ******************************************* //
 // * COMPOUND
@@ -126,3 +149,16 @@ void ASTInt(astInt_t* self, int value);
 astInt_t* newASTInt(int value);
 // ******************************************* //
 
+
+// ******************************************* //
+// * RETURN STATEMENT
+typedef struct astStatementReturn_t astStatementReturn_t;
+struct astStatementReturn_t {
+    astStatement_t base;
+
+    ast_t* value;
+};
+
+void ASTStatementReturn(astStatementReturn_t* self, ast_t* value);
+astStatementReturn_t* newASTStatementReturn(ast_t* value);
+// ******************************************* //

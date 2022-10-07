@@ -13,6 +13,7 @@ ast_t* ParseExpr(parser_t* self);
 ast_t* ParseCompound(parser_t* self);
 ast_t* ParseList(parser_t* self, bool notLambda);
 ast_t* ParseBlock(parser_t* self);
+ast_t* ParseStatement(parser_t* self, statementType_t stype);
 ast_t* ParseInt(parser_t* self);
 
 token_t* ParserEat(parser_t* self, tokenType_t type) {
@@ -22,6 +23,7 @@ token_t* ParserEat(parser_t* self, tokenType_t type) {
     self->token = self->lexer->NextToken(self->lexer);
     return self->token;
 }
+
 
 ast_t* ParseAssignemnt(parser_t* self, char* name) {
     switch (self->token->type) {
@@ -88,7 +90,12 @@ ast_t* ParseId(parser_t* self) {
     
     ParserEat(self, TOKEN_ID);
 
-    // TODO: need to check if the id is a keyword
+    // Checking if it's a statement
+    statementType_t stype = strToStatementType(name);
+    if (stype != STATEMENT_UNKNOWN) {
+        return ParseStatement(self, stype);
+    }
+
     // Assignment / Call
     if (self->token->type == TOKEN_EQUALS || self->token->type == TOKEN_LPAREN)
         return ParseAssignemnt(self, name);
@@ -174,13 +181,6 @@ ast_t* ParseId(parser_t* self) {
     astVariable_t* var = newASTVariable(name);
     return (ast_t*)var;
 }
-
-/*
-x = 234532151
-x: id = 21415
-x: list<hello> = 12412
-x: list<hello> ()
-*/
 
 ast_t* ParseExpr(parser_t* self) {
     switch (self->token->type) {
@@ -337,6 +337,19 @@ ast_t* ParseBlock(parser_t* self) {
     ParserEat(self, TOKEN_RBRACE);
 
     return (ast_t*)compound;
+}
+
+ast_t* ParseStatement(parser_t* self, statementType_t stype) {
+    switch (stype) {
+        case STATEMENT_RETURN: {
+
+            // astStatementReturn_t* ast = newASTStatementReturn();
+            break;
+        }
+        default: break;
+    }
+
+    return NULL;
 }
 
 ast_t* ParseInt(parser_t* self) {

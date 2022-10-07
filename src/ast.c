@@ -38,6 +38,7 @@ char* astTypeToStr(astType_t type) {
         case AST_FUNCTION:      return "AST_FUNCTION";
         case AST_ASSIGNMENT:    return "AST_ASSIGNMENT";
         case AST_VARIABLE:      return "AST_VARIABLE";
+        case AST_STATEMENT:     return "AST_STATEMENT";
         case AST_INT:           return "AST_INT";
         case AST_FLOAT:         return "AST_FLOAT";
         case AST_STRING:        return "AST_STRING";
@@ -45,6 +46,36 @@ char* astTypeToStr(astType_t type) {
         default:                return "AST_UNKNOWN";
     }
 }
+
+
+// ****************************************** //
+// * STATEMENT
+void ASTStatement(astStatement_t* self, statementType_t stype) {
+    AST(&self->base, AST_STATEMENT);
+    self->stype = stype;
+}
+
+astStatement_t* newASTStatement(statementType_t stype) {
+    astStatement_t* self = (astStatement_t*) malloc(sizeof(astStatement_t));
+    if (!self)
+        error_malloc(__func__);
+
+    ASTStatement(self, stype);
+    return self;
+}
+
+char* statementTypeToStr(statementType_t type) {
+    switch (type) {
+        case STATEMENT_RETURN:          return "STATEMENT_RETURN";
+        default:                        return "STATEMENT_UNKNOWN";
+    }
+}
+
+statementType_t strToStatementType(char* str) {
+    if (strcmp(str, "return") == 0) return STATEMENT_RETURN;
+    return STATEMENT_UNKNOWN;
+}
+// ****************************************** //
 
 
 // ****************************************** //
@@ -282,6 +313,24 @@ astInt_t* newASTInt(int value) {
         error_malloc(__func__);
 
     ASTInt(self, value);
+    return self;
+}
+// ******************************************* //
+
+
+// ******************************************* //
+// * RETURN STATEMENT
+void ASTStatementReturn(astStatementReturn_t* self, ast_t* value) {
+    ASTStatement(&self->base, STATEMENT_RETURN);
+    self->value = value;
+}
+
+astStatementReturn_t* newASTStatementReturn(ast_t* value) {
+    astStatementReturn_t* self = (astStatementReturn_t*) malloc(sizeof(astStatementReturn_t));
+    if (!self)
+        error_malloc(__func__);
+
+    ASTStatementReturn(self, value);
     return self;
 }
 // ******************************************* //
