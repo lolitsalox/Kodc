@@ -11,7 +11,7 @@ OBJS = $(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o, $(SRC))
 DIRS = $(wildcard $(SRCDIR)/*)
 
 CC = gcc
-CFLAGS = -g -Wall -pedantic-errors
+CFLAGS = -g -m64 -Wall -pedantic-errors
 
 target: ${OBJS} link
 	
