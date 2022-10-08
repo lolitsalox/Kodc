@@ -82,3 +82,5 @@ dkms.conf
 *.code-workspace
 
 # End of https://www.toptal.com/developers/gitignore/api/c,visualstudiocode
+main.kod
+lib/error.o
