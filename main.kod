@@ -1,5 +1,4 @@
-main = (argc: i32, argv: list<string>) -> i32 {
+main = (argc: i32, argv: ##i8) -> i32 {
     x = argc
-    return(0)
 }
 

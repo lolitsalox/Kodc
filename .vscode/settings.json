@@ -1,5 +1,6 @@
 {
     "files.associations": {
+        "*.kod": "kod",
         "token.h": "c",
         "stdio.h": "c",
         "error.h": "c",
@@ -17,7 +18,17 @@
         "types.h": "c",
         "compare": "c",
         "type_traits": "c",
-        "scope.h": "c"
+        "scope.h": "c",
+        "astcompound.h": "c",
+        "astaddress.h": "c",
+        "astvalue.h": "c",
+        "astconditionalstatement.h": "c",
+        "aststatement.h": "c",
+        "astreturnstatement.h": "c",
+        "astbinop.h": "c",
+        "astfunction.h": "c",
+        "astunaryop.h": "c",
+        "astbin.h": "c"
     },
     "makefile.launchConfigurations": [
         {

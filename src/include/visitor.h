@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ast.h"
+#include "ast/astFunction.h"
 
 typedef struct visitor_t visitor_t;
 

@@ -65,7 +65,7 @@ void error_parser_invalid_func_def(const char* name) {
 }
 
 void error_visitor_type(astType_t type) {
-    printf("[Visitor]: Don't know how to handle node type %s/\n", astTypeToStr(type));
+    printf("[Visitor]: Don't know how to handle node type %s\n", astTypeToStr(type));
     exit(1);
 }
 

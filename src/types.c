@@ -14,6 +14,7 @@ char* dTypeToStr(dType_t type) {
         case DTYPE_U32:       return "DTYPE_U32";
         case DTYPE_U64:       return "DTYPE_U64";
         case DTYPE_F64:       return "DTYPE_F64";
+        case DTYPE_VOID:    return "DTYPE_VOID";
         case DTYPE_STRING:    return "DTYPE_STRING";
         case DTYPE_LIST:      return "DTYPE_LIST";
         case DTYPE_STRUCT:    return "DTYPE_STRUCT";
@@ -40,6 +41,7 @@ dType_t strToDType(const char* str) {
         default: break;
     }
 
+    if (strcmp(str, "void") == 0) return DTYPE_VOID;
     if (strcmp(str, "string") == 0) return DTYPE_STRING;
     if (strcmp(str, "list") == 0)   return DTYPE_LIST;
     if (strcmp(str, "struct") == 0) return DTYPE_STRUCT;
@@ -47,8 +49,10 @@ dType_t strToDType(const char* str) {
     return DTYPE_UNKNOWN;
 }
 
-size_t dtypeSize(dType_t type) {
-    switch (type) {
+size_t dtypeInfoSize(dtypeInfo_t type) {
+    if (type.ptrCount) return 8;
+
+    switch (type.dtype) {
         case DTYPE_I8:
         case DTYPE_U8:        return 1;
 

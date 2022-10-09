@@ -78,6 +78,7 @@ const char* tokenTypeToStr(tokenType_t type) {
         case TOKEN_SEMI:            return          "TOKEN_SEMI";              
         case TOKEN_QUESTION:        return          "TOKEN_QUESTION";          
         case TOKEN_AT:              return          "TOKEN_AT";               
+        case TOKEN_HASH:            return          "TOKEN_HASH";               
         case TOKEN_LINE_COMMENT:    return          "TOKEN_LINE_COMMENT";      
         case TOKEN_MULTILINE_COMMENT_START: return  "TOKEN_MULTILINE_COMMENT_START";   
         case TOKEN_MULTILINE_COMMENT_END:   return  "TOKEN_MULTILINE_COMMENT_END";     
@@ -85,7 +86,7 @@ const char* tokenTypeToStr(tokenType_t type) {
         case TOKEN_ARROW:           return          "TOKEN_ARROW";             
         case TOKEN_BACKSLASH:       return          "TOKEN_BACKSLASH";         
         case TOKEN_NL:              return          "TOKEN_NL";               
-        case TOKEN_EOF:             return          "TOKEN_EoF";               
+        case TOKEN_EOF:             return          "TOKEN_EOF";               
         default:                    return          "TOKEN_UNKNOWN";
     }
 }

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "lexer.h"
-#include "ast.h"
+#include "ast/ast.h"
 
 typedef struct parser_t parser_t;
 

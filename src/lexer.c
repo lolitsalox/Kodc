@@ -21,6 +21,8 @@ static bool isSymbol(char c) {
         case '{':
         case '}':
         case '=':
+        case '@':
+        case '#':
         case ',':
         case '.':
         case ':':
@@ -93,12 +95,14 @@ static tokenType_t findSymbol(char* s) {
         case ':': return TOKEN_COLON;
         case ';': return TOKEN_SEMI;
         case '?': return TOKEN_QUESTION;
+        case '%': return TOKEN_MOD;
         case '\\': return TOKEN_BACKSLASH;
+        case '#': return TOKEN_HASH;
+        case '@': return TOKEN_AT;
         case '+': return TOKEN_ADD;
         case '-': return TOKEN_SUB;
         case '/': return TOKEN_DIV;
         case '*': return TOKEN_MUL;
-        case '%': return TOKEN_MOD;
         case '&': return TOKEN_AND;
         case '|': return TOKEN_OR;
         case '^': return TOKEN_HAT;
@@ -188,6 +192,7 @@ token_t* LexerCollectString (lexer_t* self) {
 
 token_t* LexerCollectNumber (lexer_t* self) {
     char* value = (char*) calloc(1, sizeof(char));
+    if (!value) error_calloc(__func__);
 
     bool dot = false;
     while (self->CanAdvance(self) && (
@@ -203,6 +208,8 @@ token_t* LexerCollectNumber (lexer_t* self) {
 
 token_t* LexerCollectSymbol (lexer_t* self) {
     char* value = (char*) calloc(1, 2 * sizeof(char));
+    if (!value) error_calloc(__func__);
+
     value[0] = self->c;
     self->Advance(self);
     tokenType_t type = findSymbol(value);
@@ -222,11 +229,14 @@ token_t* LexerCollectSymbol (lexer_t* self) {
 
 token_t* LexerCollectId (lexer_t* self) {
     char* value = (char*) calloc(1, sizeof(char));
+    if (!value) error_calloc(__func__);
 
     while (self->CanAdvance(self) && !isspace(self->c) && !isSymbol(self->c)) {
         appendChar(&value, self->c);
         self->Advance(self);
     }
+
+    if (strcmp(value, "sizeof") == 0) return newToken(value, TOKEN_SIZEOF);
 
     return newToken(value, TOKEN_ID);
 }
@@ -249,9 +259,9 @@ void Lexer(lexer_t* self, char* src) {
 }
 
 lexer_t* newLexer(char* src) {
-    lexer_t* self = calloc(1, sizeof(lexer_t));
+    lexer_t* self = malloc(sizeof(lexer_t));
     if (!self) {
-        error_calloc(__func__);
+        error_malloc(__func__);
     }
     
     Lexer(self, src);

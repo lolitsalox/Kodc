@@ -27,7 +27,8 @@ typedef enum tokenType_t {
     TOKEN_BOOL_AND,           //  &&
     TOKEN_BOOL_OR,            //  ||
     TOKEN_ID,                 //  main x y foo
-    TOKEN_KEYWORD,            //  int var fn return while if
+    TOKEN_KEYWORD,            //  while if
+    TOKEN_SIZEOF,             //  sizeof
     
     TOKEN_CHAR,               //  'a'
     TOKEN_STRING,             //  "Hello world"
@@ -49,6 +50,7 @@ typedef enum tokenType_t {
     TOKEN_SEMI,               //  ;   
     TOKEN_QUESTION,           //  ?   
     TOKEN_AT,                 //  @
+    TOKEN_HASH,               //  #
     TOKEN_LINE_COMMENT,       // //
     TOKEN_MULTILINE_COMMENT_START,     // /*
     TOKEN_MULTILINE_COMMENT_END,       // */
