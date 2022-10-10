@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-void ASTPrint(ast_t* self, size_t indent) {
+void AstPrint(ast_t* self, size_t indent) {
     for (size_t i = 0; i < indent * INDENT_SCALAR; ++i)
         printf(" ");
     printf("%s\n", astTypeToStr(self->type));
@@ -16,7 +16,7 @@ void Ast(ast_t* self, astType_t type) {
     self->dtypeInfo.dtype = DTYPE_UNKNOWN;
     self->dtypeInfo.ptrCount = 0;
 
-    self->Print = ASTPrint;
+    self->Print = AstPrint;
 }
 
 ast_t* newAst(astType_t type) {

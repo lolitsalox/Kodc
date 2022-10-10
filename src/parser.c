@@ -116,31 +116,31 @@ ast_t* ParseId(parser_t* self) {
     if (self->token->type == TOKEN_EQUALS || self->token->type == TOKEN_LPAREN || self->token->type == TOKEN_POINTER)
         return ParseAssignemnt(self, (ast_t*) newAstVariable(name));
 
-    if (self->token->type == TOKEN_COLON) {
-        ParserEat(self, TOKEN_COLON);
+        if (self->token->type == TOKEN_COLON) {
+            ParserEat(self, TOKEN_COLON);
 
-        // if the dtype is unknown, in the visitor 
-        // search for a structure definition using the context
-        // TODO: add ref support
-        size_t ptrCount = 0;
-        while (self->token->type == TOKEN_HASH) {
-            ptrCount++;
-            ParserEat(self, TOKEN_HASH);
+            // if the dtype is unknown, in the visitor 
+            // search for a structure definition using the context
+            // TODO: add ref support
+            size_t ptrCount = 0;
+            while (self->token->type == TOKEN_HASH) {
+                ptrCount++;
+                ParserEat(self, TOKEN_HASH);
+            }
+            
+            dType_t dtype = strToDType(self->token->value);
+
+            ParserEat(self, TOKEN_ID);
+
+            astVariable_t* left = newAstVariable(name);
+            left->base.dtypeInfo.dtype = dtype;
+            left->base.dtypeInfo.ptrCount = ptrCount;
+
+            if (self->token->type == TOKEN_EQUALS)
+                return ParseAssignemnt(self, (ast_t*) left);
+
+            return (ast_t*)left;
         }
-        
-        dType_t dtype = strToDType(self->token->value);
-
-        ParserEat(self, TOKEN_ID);
-
-        astVariable_t* left = newAstVariable(name);
-        left->base.dtypeInfo.dtype = dtype;
-        left->base.dtypeInfo.ptrCount = ptrCount;
-
-        if (self->token->type == TOKEN_EQUALS)
-            return ParseAssignemnt(self, (ast_t*) left);
-
-        return (ast_t*)left;
-    }
 
     if (self->token->type == TOKEN_EQUALS || self->token->type == TOKEN_LPAREN)
         return ParseAssignemnt(self, (ast_t*)newAstVariable(name));
@@ -242,6 +242,9 @@ ast_t* ParseList(parser_t* self, bool notLambda) {
         return (ast_t*) func;
     }
 
+    if (self->token->type == TOKEN_EQUALS)
+        return ParseAssignemnt(self, (ast_t*) compound);
+    
     return (ast_t*)compound;
 }
 
@@ -284,7 +287,6 @@ ast_t* ParseInt(parser_t* self) {
 // x = @y
 // x -> y
 ast_t* ParseAddress(parser_t* self) {
-    return NULL;
     // if (self->token->type == TOKEN_POINTER) {
     //     ParserEat(self, TOKEN_POINTER);
     //     ast_t* ast = ParseExpr(self);
@@ -295,9 +297,10 @@ ast_t* ParseAddress(parser_t* self) {
     //     return (ast_t*) newASTAddress(true, ast);
     // }
 
-    // bool isRef = self->token->type == TOKEN_HASH; 
-    // ParserEat(self, isRef ? TOKEN_HASH : TOKEN_AT);
-    // ast_t* ast = ParseExpr(self);
+    bool isRef = self->token->type == TOKEN_HASH; 
+    ParserEat(self, isRef ? TOKEN_HASH : TOKEN_AT);
+
+    ast_t* ast = ParseExpr(self);
     // if (ast->type == AST_ADDRESS) {
     //     // ?#
     //     if (((astValue_t*)ast)->ref) {
@@ -314,20 +317,19 @@ ast_t* ParseAddress(parser_t* self) {
     //     if (isRef)
     //         return ((astValue_t*)ast)->value;
     // }
-    // // TODO: add this inside the visitor
-    // // if (!isRef && ast->dtypeInfo.ptrCount == 0) {
-    // //     printf("[Parser]: TODO: trying to dereference a non pointer type\n");
-    // //     exit(1);
-    // // }
-
-    // if (ast->type == AST_ASSIGNMENT) {
-    //     ((astAssignment_t*)ast)->deref = true;
-    //     return ast;
+    // TODO: add this inside the visitor
+    // if (!isRef && ast->dtypeInfo.ptrCount == 0) {
+    //     printf("[Parser]: TODO: trying to dereference a non pointer type\n");
+    //     exit(1);
     // }
 
-    // astValue_t* addr = newASTAddress(isRef, ast);
-    // addr->base.dtypeInfo = addr->value->dtypeInfo;
-    // return (ast_t*) addr;    
+    if (ast->type == AST_ASSIGNMENT) {
+        astAddress_t* addr = newAstAddress(isRef, ((astBin_t*)ast)->left);
+        ((astBin_t*)ast)->left = (ast_t*)addr;
+        return ast;
+    }
+
+    return (ast_t*)newAstAddress(isRef, ast);
 }
 
 ast_t* ParseExpr(parser_t* self) {
@@ -336,9 +338,12 @@ ast_t* ParseExpr(parser_t* self) {
         // case TOKEN_INT:     return ParseInt(self);
         case TOKEN_LPAREN:  return ParseList(self, false);
         case TOKEN_LBRACE:  return ParseBlock(self);
-        // case TOKEN_HASH:
-        // case TOKEN_AT:      return ParseAddress(self);
-        case TOKEN_NL: { ParserEat(self, TOKEN_NL); return newAst(AST_NOOP); }
+        case TOKEN_HASH:
+        case TOKEN_AT:      return ParseAddress(self);
+        case TOKEN_NL:
+            ParserEat(self, TOKEN_NL); 
+            return newAst(AST_NOOP);
+            
         default: error_parser_unexpected_token(tokenTypeToStr(self->token->type));
     }
 
