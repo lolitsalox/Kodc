@@ -23,9 +23,9 @@ y -> x  // y = #x
 ```
 
 ## Function
-### `[<id>] (<id>: <dtype>, ...) { <compound> }`
+### `[<id>] (<id>: <dtype>, ...) [-> <dtype>] { <compound> }`
 ```rust
-f (a: i32) {
+f (a: i32) -> i32 {
     return a 
 }
 ```
