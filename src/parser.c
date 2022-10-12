@@ -20,6 +20,11 @@
 
 token_t* ParserEat(parser_t* self, tokenType_t type);
 
+ast_t* ParseExpr(parser_t* self);
+ast_t* ParseCompound(parser_t* self);
+ast_t* ParseBlock(parser_t* self);
+ast_t* ParseStatement(parser_t* self, statementType_t stype);
+
 ast_t* ParseExprAssignment(parser_t* self);  // =
 ast_t* ParseLogicalOr(parser_t* self);       // ||
 ast_t* ParseLogicalAnd(parser_t* self);      // &&
@@ -34,16 +39,6 @@ ast_t* ParseMDR(parser_t* self);             // * / %
 ast_t* ParseSecond(parser_t* self);          // + - ! ~ cast @ # sizeof       
 ast_t* ParseFirst(parser_t* self);           // from the right () [] . 
 ast_t* ParseFactor(parser_t* self);          // values themselves
-
-ast_t* ParseAssignment(parser_t* self, ast_t* left, bool typeDefined);
-ast_t* ParseId(parser_t* self);
-ast_t* ParseExpr(parser_t* self);
-ast_t* ParseCompound(parser_t* self);
-ast_t* ParseList(parser_t* self, bool notLambda);
-ast_t* ParseBlock(parser_t* self);
-ast_t* ParseStatement(parser_t* self, statementType_t stype);
-ast_t* ParseValue(parser_t* self);
-ast_t* ParseAddress(parser_t* self);
 
 token_t* ParserEat(parser_t* self, tokenType_t type) {
     if (self->token->type != type)
