@@ -8,6 +8,7 @@ void AstVariable(astVariable_t* self, char* name) {
 
     self->name = name;
     self->stackIndex = 0;
+    self->typeDefined = false;
 }
 
 astVariable_t* newAstVariable(char* name) {
