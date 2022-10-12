@@ -59,6 +59,7 @@ const char* tokenTypeToStr(tokenType_t type) {
         case TOKEN_BOOL_AND:        return          "TOKEN_BOOL_AND";          
         case TOKEN_BOOL_OR:         return          "TOKEN_BOOL_OR";         
         case TOKEN_ID:              return          "TOKEN_ID";              
+        case TOKEN_SIZEOF:          return          "TOKEN_SIZEOF";              
         case TOKEN_KEYWORD:         return          "TOKEN_KEYWORD";         
         case TOKEN_CHAR:            return          "TOKEN_CHAR";              
         case TOKEN_STRING:          return          "TOKEN_STRING";            
