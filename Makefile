@@ -22,4 +22,4 @@ link:
 	${CC} ${OBJS} -o ${TARGET}.exe
 
 clean:
-	rm -r lib/*.o
+	rm lib/*.o lib/ast/*.o
