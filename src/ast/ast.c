@@ -41,6 +41,8 @@ char* astTypeToStr(astType_t type) {
         case AST_INT:           return "AST_INT";
         case AST_FLOAT:         return "AST_FLOAT";
         case AST_STRING:        return "AST_STRING";
+        case AST_BIN_OP:        return "AST_BIN_OP";
+        case AST_UNARY_OP:      return "AST_UNARY_OP";
         default:                return "AST_UNKNOWN";
     }
 }
