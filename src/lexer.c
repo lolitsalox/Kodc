@@ -50,7 +50,6 @@ static bool isSymbol(char c) {
 static tokenType_t findSymbol(char* s) {
     switch (s[0]) {
         case ':': if (s[1] == s[0]) return TOKEN_NAMESPACE; break;
-        case '*': if (s[1] == s[0]) return TOKEN_POW;       break;
         case '&': if (s[1] == s[0]) return TOKEN_BOOL_AND;  break;
         case '|': if (s[1] == s[0]) return TOKEN_BOOL_OR;   break;
 

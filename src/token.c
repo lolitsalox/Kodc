@@ -42,7 +42,6 @@ const char* tokenTypeToStr(tokenType_t type) {
         case TOKEN_DIV:             return          "TOKEN_DIV";               
         case TOKEN_MUL:             return          "TOKEN_MUL";               
         case TOKEN_MOD:             return          "TOKEN_MOD";               
-        case TOKEN_POW:             return          "TOKEN_POW";               
         case TOKEN_AND:             return          "TOKEN_AND";               
         case TOKEN_OR:              return          "TOKEN_OR";               
         case TOKEN_HAT:             return          "TOKEN_HAT";               

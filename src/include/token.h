@@ -8,7 +8,7 @@ typedef enum tokenType_t {
     TOKEN_DIV,                //  /
     TOKEN_MUL,                //  *
     TOKEN_MOD,                //  %
-    TOKEN_POW,                //  **
+    TOKEN_POW,                //  ** NOT IMPLEMENTED IN THIS LEXER
     
     TOKEN_AND,                //  &
     TOKEN_OR,                 //  |
