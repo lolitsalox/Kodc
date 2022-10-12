@@ -21,10 +21,5 @@ ${OBJDIR}/%.o: ${SRCDIR}/%.c
 link:
 	${CC} ${OBJS} -o ${TARGET}.exe
 
-setup:
-	@mkdir $(BUILDDIR)
-	@mkdir $(SRCDIR)
-	@mkdir $(OBJDIR)
-
 clean:
 	rm -r lib/*.o
