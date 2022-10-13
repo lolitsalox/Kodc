@@ -28,7 +28,10 @@
         "astbinop.h": "c",
         "astfunction.h": "c",
         "astunaryop.h": "c",
-        "astbin.h": "c"
+        "astbin.h": "c",
+        "astcast.h": "c",
+        "astcall.h": "c",
+        "astassignment.h": "c"
     },
     "makefile.launchConfigurations": [
         {

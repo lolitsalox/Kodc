@@ -2,7 +2,6 @@
 
 void AstValue(astValue_t* self, astType_t astType, dtypeInfo_t dtypeInfo, char* value) {
     Ast(&self->base, astType);
-    // self->base.Print = (void (*)(ast_t*, size_t)) AddressPrint;
     self->base.dtypeInfo = dtypeInfo;
     self->value = value;
 }
