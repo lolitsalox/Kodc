@@ -19,6 +19,7 @@ typedef enum astType_t {
     AST_FUNCTION,    
     AST_ASSIGNMENT,    
     AST_VARIABLE,
+    AST_CAST,
     AST_STATEMENT,
     AST_ADDRESS,
     AST_INT,

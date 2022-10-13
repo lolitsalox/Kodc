@@ -36,6 +36,7 @@ char* astTypeToStr(astType_t type) {
         case AST_FUNCTION:      return "AST_FUNCTION";
         case AST_ASSIGNMENT:    return "AST_ASSIGNMENT";
         case AST_VARIABLE:      return "AST_VARIABLE";
+        case AST_CAST:          return "AST_CAST";
         case AST_STATEMENT:     return "AST_STATEMENT";
         case AST_ADDRESS:       return "AST_ADDRESS";
         case AST_INT:           return "AST_INT";
