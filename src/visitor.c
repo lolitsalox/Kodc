@@ -176,7 +176,7 @@ ast_t* VisitFunction(visitor_t* self, astFunction_t* node, scope_t* scope) {
     node->scope = newScope(scope);
     self->currentFunction = node;
 
-    int tSp = 16; // rip, rbp
+    int tSp = 24; // rip, rbp
     for (size_t i = 0; i < node->base.children->size; ++i) {
         astVariable_t* child = (astVariable_t*) node->base.children->items[i];
 
@@ -191,7 +191,7 @@ ast_t* VisitFunction(visitor_t* self, astFunction_t* node, scope_t* scope) {
         tSp += dtypeInfoSize(child->base.dtypeInfo);
         
     }
-    node->scope->paramSize = tSp - 16;
+    node->scope->paramSize = tSp - 24;
 
     if (strcmp(node->name, "<anonymous>") != 0) {
         scope->variables->PushBack(scope->variables, node);

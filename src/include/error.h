@@ -24,3 +24,5 @@ void error_visitor_redefition(const char* name);
 void error_visitor_undefined(const char* name);
 void error_visitor_return_type_mismatch(const char* name, const char* funcReturnType, const char* returnType);
 void error_visitor_multiple_return_types(const char* name, const char* typeOne, const char* typeTwo);
+
+void error_gen_asm_type(astType_t type);

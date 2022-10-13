@@ -90,3 +90,8 @@ void error_visitor_multiple_return_types(const char* name, const char* typeOne, 
     printf("%s, %s", typeOne, typeTwo);
     exit(1);
 }
+
+void error_gen_asm_type(astType_t type) {
+    printf("[Assembly front-end]: Don't know how to handle node type %s\n", astTypeToStr(type));
+    exit(1);
+}

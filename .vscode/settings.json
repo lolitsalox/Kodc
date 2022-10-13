@@ -32,7 +32,8 @@
         "astcast.h": "c",
         "astcall.h": "c",
         "astassignment.h": "c",
-        "astunarystatement.h": "c"
+        "astunarystatement.h": "c",
+        "asm.h": "c"
     },
     "makefile.launchConfigurations": [
         {

@@ -3,6 +3,7 @@
 #include "include/list.h"
 #include "include/parser.h"
 #include "include/visitor.h"
+#include "include/asm.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -13,16 +14,21 @@ void kod_compile(char* src) {
     parser_t* parser = newParser(lexer);
     
     ast_t* root = parser->Parse(parser);
-    // root->Print(root, 0);
-
+    
     visitor_t* visitor = newVisitor();
     visitor->Visit(visitor, root, visitor->globalScope, false);
+    // root->Print(root, 0);
+
     root->Print(root, 0);
 
     // Idea: stack capacity starts at 32 for the main function
     // each time when we increase the stack index, we make sure it's <= to the capacity
     // else, increase the capacity by 16 to align the stack like C
 
+    char* assebmly = gen_asm(root);
+    io_write("main.asm", assebmly);
+    
+    free(assebmly);
     free(visitor);
     free(root);
     free(parser);
