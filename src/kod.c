@@ -15,15 +15,15 @@ void kod_compile(char* src) {
     ast_t* root = parser->Parse(parser);
     root->Print(root, 0);
 
-    // visitor_t* visitor = newVisitor();
-    // root = visitor->Visit(visitor, root, visitor->globalScope);
+    visitor_t* visitor = newVisitor();
+    visitor->Visit(visitor, root, visitor->globalScope, false);
+    root->Print(root, 0);
 
-    // root->Print(root, 0);
     // Idea: stack capacity starts at 32 for the main function
     // each time when we increase the stack index, we make sure it's <= to the capacity
     // else, increase the capacity by 16 to align the stack like C
 
-    // free(visitor);
+    free(visitor);
     free(root);
     free(parser);
     free(lexer);
