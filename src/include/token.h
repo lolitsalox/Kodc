@@ -27,8 +27,9 @@ typedef enum tokenType_t {
     TOKEN_BOOL_AND,           //  &&
     TOKEN_BOOL_OR,            //  ||
     TOKEN_ID,                 //  main x y foo
-    TOKEN_KEYWORD,            //  while if
+    TOKEN_KEYWORD,            //  NOT USED
     TOKEN_SIZEOF,             //  sizeof
+    TOKEN_AS,                 //  as
     
     TOKEN_CHAR,               //  'a'
     TOKEN_STRING,             //  "Hello world"

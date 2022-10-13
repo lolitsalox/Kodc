@@ -1,13 +1,13 @@
 #include "include/parser.h"
 #include "include/error.h"
 
-#include "include/ast/astAddress.h"
 #include "include/ast/astAssignment.h"
 #include "include/ast/astBinOp.h"
 #include "include/ast/astCall.h"
-#include "include/ast/astConditionalStatement.h"
+#include "include/ast/astCast.h"
 #include "include/ast/astFunction.h"
-#include "include/ast/astReturnStatement.h"
+#include "include/ast/astConditionalStatement.h"
+#include "include/ast/astUnaryStatement.h"
 #include "include/ast/astUnaryOp.h"
 #include "include/ast/astValue.h"
 #include "include/ast/astVariable.h"
@@ -25,7 +25,7 @@ ast_t* ParseCompound(parser_t* self);
 ast_t* ParseBlock(parser_t* self);
 ast_t* ParseStatement(parser_t* self, statementType_t stype);
 
-ast_t* ParseExprAssignment(parser_t* self);  // =
+ast_t* ParseExprAssignment(parser_t* self);  // = -> += -= etc
 ast_t* ParseLogicalOr(parser_t* self);       // ||
 ast_t* ParseLogicalAnd(parser_t* self);      // &&
 ast_t* ParseBitwiseOr(parser_t* self);       // |
@@ -36,7 +36,8 @@ ast_t* ParseBoolGTLT(parser_t* self);        // < > <= >=
 ast_t* ParseBitwiseSHLR(parser_t* self);     // << >>
 ast_t* ParseAddSub(parser_t* self);          // + -
 ast_t* ParseMDR(parser_t* self);             // * / %
-ast_t* ParseSecond(parser_t* self);          // + - ! ~ cast @ # sizeof       
+ast_t* ParseCast(parser_t* self);            // cast
+ast_t* ParseSecond(parser_t* self);          // + - ! ~ @ # sizeof       
 ast_t* ParseFirst(parser_t* self);           // from the right () [] . 
 ast_t* ParseFactor(parser_t* self);          // values themselves
 
@@ -77,7 +78,8 @@ ast_t* ParseBlock(parser_t* self) {
 
 ast_t* ParseStatement(parser_t* self, statementType_t stype) {
     switch (stype) {
-        case STATEMENT_RETURN: return (ast_t*) newAstReturnStatement(ParseExpr(self));
+        case STATEMENT_RETURN: 
+            return (ast_t*) newAstUnaryStatement(stype, ParseExpr(self));
         default:
             printf("[Parser]: TODO: still don't support %s", stype_to_str(stype));
             exit(1);
@@ -115,7 +117,7 @@ ast_t* ParseExprAssignment(parser_t* self) {
     ast_t* left = ParseLogicalOr(self);
     bool typeDefined = left->type == AST_VARIABLE ? ((astVariable_t*)left)->typeDefined : false;
 
-    // TODO: add support for +=, *=, etc...
+    // TODO: add support for ->, +=, *=, etc...
     if (self->token->type != TOKEN_EQUALS) return left;
 
     ParserEat(self, TOKEN_EQUALS);
@@ -255,7 +257,7 @@ ast_t* ParseAddSub(parser_t* self) {
 }   
 
 ast_t* ParseMDR(parser_t* self) {
-    ast_t* left = ParseSecond(self);
+    ast_t* left = ParseCast(self);
 
     if (
         self->token->type == TOKEN_MUL ||
@@ -270,6 +272,27 @@ ast_t* ParseMDR(parser_t* self) {
 
     return left;
 }   
+
+ast_t* ParseCast(parser_t* self) {
+    ast_t* value = ParseSecond(self);
+
+    if (self->token->type == TOKEN_AS) {
+        ParserEat(self, self->token->type);
+        dtypeInfo_t dtypeInfo = { 0 };
+
+        while (self->token->type == TOKEN_HASH) {
+            dtypeInfo.ptrCount++;
+            ParserEat(self, TOKEN_HASH);
+        }
+        
+        dtypeInfo.dtype = strToDType(self->token->value);
+
+        ParserEat(self, TOKEN_ID);
+
+        return (ast_t*) newAstCast(dtypeInfo, value);
+    }
+    return value;
+}
 
 ast_t* ParseSecond(parser_t* self) {
     // Unary stuff like sizeof, +, -, @, #, ~, !
@@ -297,13 +320,14 @@ ast_t* ParseSecond(parser_t* self) {
    
 ast_t* ParseFirst(parser_t* self) {
     ast_t* value = ParseFactor(self);
+    if (value->type == AST_NOOP) return value;
 
     switch (self->token->type) {
         case TOKEN_LPAREN: {
             ast_t* ast = ParseFactor(self);
             if (ast->type == AST_FUNCTION) {
                 if (value->type != AST_VARIABLE) {
-                    printf("[Parser]: wrong syntax for declaring a function\n");
+                    printf("[Parser]: invalid syntax for declaring a function\n");
                     exit(1);
                 }
                 ((astFunction_t*)ast)->name = ((astVariable_t*)value)->name;
@@ -315,8 +339,8 @@ ast_t* ParseFirst(parser_t* self) {
                 printf("[Parser]: TODO: what are u calling lol\n");
                 exit(1);
             }
+            
             return (ast_t*) newAstCall(value, (astCompound_t*) ast);
-            break;
         }
 
         case TOKEN_LBRACKET: {
@@ -348,8 +372,10 @@ ast_t* ParseFactor(parser_t* self) {
             ast = (ast_t*) newAstValue(AST_STRING, ((dtypeInfo_t){DTYPE_I8, 1}), self->token->value);
             break;
         case TOKEN_ID: {
-
+            
+            // Checking if it's a keyword
             statementType_t stype = str_to_stype(self->token->value);
+            
             if (stype != STATEMENT_UNKNOWN) {
                 ParserEat(self, self->token->type);
                 return ParseStatement(self, stype);
@@ -376,13 +402,11 @@ ast_t* ParseFactor(parser_t* self) {
                 ((astVariable_t*)ast)->base.dtypeInfo.ptrCount = ptrCount;
                 ((astVariable_t*)ast)->typeDefined = true;
             }
-
             return ast;
         }
         case TOKEN_LPAREN: {
             ParserEat(self, TOKEN_LPAREN);
             astCompound_t* compound = newAstCompound();
-
             SKIPNL
 
             // if the list is not empty

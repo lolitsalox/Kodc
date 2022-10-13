@@ -236,6 +236,7 @@ token_t* LexerCollectId (lexer_t* self) {
     }
 
     if (strcmp(value, "sizeof") == 0) return newToken(value, TOKEN_SIZEOF);
+    if (strcmp(value, "as") == 0)     return newToken(value, TOKEN_AS);
 
     return newToken(value, TOKEN_ID);
 }
