@@ -10,8 +10,8 @@ void AstFunction(astFunction_t* self) {
     
     self->name = "<anonymous>";
     self->body = newAstCompound();
-    self->returnTypeInfo.dtype    = DTYPE_UNKNOWN;
-    self->returnTypeInfo.ptrCount = 0;
+    self->base.base.dtypeReturnInfo.dtype    = DTYPE_UNKNOWN;
+    self->base.base.dtypeReturnInfo.ptrCount = 0;
 
     self->scope = NULL;
 }
@@ -34,9 +34,9 @@ void FunctionPrint(astFunction_t* self, size_t indent) {
     INDENT(indent + 1)
     printf("return type: ");
 
-    for (size_t i = 0; i < self->returnTypeInfo.ptrCount; ++i)
+    for (size_t i = 0; i < self->base.base.dtypeReturnInfo.ptrCount; ++i)
         printf("#");
-    printf("%s\n", dTypeToStr(self->returnTypeInfo.dtype));
+    printf("%s\n", dTypeToStr(self->base.base.dtypeReturnInfo.dtype));
     
     INDENT(indent + 1)
     printf("Parameters:\n");

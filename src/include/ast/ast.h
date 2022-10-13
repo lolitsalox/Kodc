@@ -21,6 +21,8 @@ typedef enum astType_t {
     AST_VARIABLE,
     AST_CAST,
     AST_STATEMENT,
+    AST_CONDITIONAL_STATEMENT,
+    AST_UNARY_STATEMENT,
     AST_ADDRESS,
     AST_INT,
     AST_FLOAT,
@@ -43,6 +45,9 @@ struct ast_t {
 
     // Additional info about the datatype if needed
     dtypeInfo_t dtypeInfo;
+
+    // Return dtype if needed
+    dtypeInfo_t dtypeReturnInfo;
 
     // A virtual function
     void (*Print) (ast_t* self, size_t indent);

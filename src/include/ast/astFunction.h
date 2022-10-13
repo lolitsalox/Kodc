@@ -8,7 +8,6 @@ struct astFunction_t {
     astCompound_t base;
 
     char* name;
-    dtypeInfo_t returnTypeInfo;
     astCompound_t* body;
     scope_t* scope;
 };

@@ -7,6 +7,7 @@ void AstConditionalStatement(
     astCompound_t* body
 ) {
     AstStatement(&self->base, stype);
+    self->base.base.type = AST_CONDITIONAL_STATEMENT;
     
     self->condition = condition;
     self->body = body;

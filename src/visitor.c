@@ -17,15 +17,22 @@
 #include <stdlib.h>
 #include <string.h>
 
-astVariable_t* lookupVar(scope_t* scope, char* name) {
+ast_t* lookupVar(scope_t* scope, char* name) {
     if (scope->mom) {
-        astVariable_t* var = lookupVar(scope->mom, name);
+        ast_t* var = lookupVar(scope->mom, name);
         if (var) return var;
     }
 
     for (size_t i = 0; i < scope->variables->size; ++i) {
-        if (strcmp(((astVariable_t*)scope->variables->items[i])->name, name) == 0) {
-            return (astVariable_t*) scope->variables->items[i];
+        ast_t* child = (ast_t*) scope->variables->items[i];
+        if (child->type == AST_VARIABLE) {
+            if (strcmp(((astVariable_t*)child)->name, name) == 0) {
+                return child;
+            }
+        } else {
+            if (strcmp(((astFunction_t*)child)->name, name) == 0) {
+                return child;
+            }
         }
     }
     return NULL;
@@ -50,6 +57,8 @@ ast_t* VisitFunction(visitor_t* self, astFunction_t* node, scope_t* scope);
 ast_t* VisitCall(visitor_t* self, astCall_t* node, scope_t* scope);
 ast_t* VisitBinOp(visitor_t* self, astBinOp_t* node, scope_t* scope);
 ast_t* VisitUnaryOp(visitor_t* self, astUnaryOp_t* node, scope_t* scope);
+ast_t* VisitUnaryStatement(visitor_t* self, astUnaryStatement_t* node, scope_t* scope);
+ast_t* VisitConditionalStatement(visitor_t* self, astConditionalStatement_t* node, scope_t* scope);
 
 
 ast_t* Visit(visitor_t* self, ast_t* node, scope_t* scope, bool noerror) {
@@ -65,6 +74,8 @@ ast_t* Visit(visitor_t* self, ast_t* node, scope_t* scope, bool noerror) {
         case AST_CALL:          return VisitCall        (self, (astCall_t*) node, scope);
         case AST_BIN_OP:        return VisitBinOp       (self, (astBinOp_t*) node, scope);
         case AST_UNARY_OP:      return VisitUnaryOp     (self, (astUnaryOp_t*) node, scope);
+        case AST_UNARY_STATEMENT:           return VisitUnaryStatement          (self, (astUnaryStatement_t*) node, scope);
+        case AST_CONDITIONAL_STATEMENT:     return VisitConditionalStatement    (self, (astConditionalStatement_t*) node, scope);
         default: error_visitor_type(node->type);
     }
 
@@ -97,7 +108,7 @@ ast_t* VisitAssignment(visitor_t* self, astAssignment_t* node, scope_t* scope) {
     node->base.right = Visit(self, node->base.right, scope, false);
 
     if (node->base.left->type == AST_VARIABLE) {
-        astVariable_t* var = lookupVar(scope, ((astVariable_t*)node->base.left)->name);
+        astVariable_t* var = (astVariable_t*) lookupVar(scope, ((astVariable_t*)node->base.left)->name);
 
         if (var) {
             node->base.left = (ast_t*) var;
@@ -137,7 +148,8 @@ ast_t* VisitAssignment(visitor_t* self, astAssignment_t* node, scope_t* scope) {
     }
 
     node->base.left->dtypeInfo = node->base.right->dtypeInfo;
-
+    node->base.left->dtypeReturnInfo = node->base.right->dtypeReturnInfo;
+    
     scope->variables->PushBack(scope->variables, node->base.left);
     
     if (scope->mom) {
@@ -181,7 +193,11 @@ ast_t* VisitFunction(visitor_t* self, astFunction_t* node, scope_t* scope) {
     }
     node->scope->paramSize = tSp - 16;
 
-    scope->variables->PushBack(node->scope->variables, node);
+    if (strcmp(node->name, "<anonymous>") != 0) {
+        scope->variables->PushBack(scope->variables, node);
+    }
+
+    self->currentFunction = node;
 
     for (size_t i = 0; i < node->body->children->size; ++i) {
         node->body->children->items[i] = Visit(self, (ast_t*) node->body->children->items[i], node->scope, false);
@@ -197,19 +213,27 @@ ast_t* VisitFunction(visitor_t* self, astFunction_t* node, scope_t* scope) {
     }
     printf("\n");
 
-    self->currentFunction = node;
 
     if (strcmp(node->name, "<anonymous>") == 0) {
         return (ast_t*) node;
     }
 
-    scope->variables->PushBack(scope->variables, node);
     return (ast_t*) node;
 }
 
 
 ast_t* VisitCall(visitor_t* self, astCall_t* node, scope_t* scope) {
-    // astFunction_t* func = (astFunction_t*)lookupVar(scope, node->name);
+    if (node->value->type != AST_VARIABLE) {
+        printf("[Visitor]: TODO: can't call something else than a variable\n");
+        exit(1);
+    }
+    ast_t* func = lookupVar(scope, ((astVariable_t*)node->value)->name);
+
+    if (!func) {
+        printf("[Visitor]: TODO: function '%s' not found\n", ((astVariable_t*)node->value)->name);
+        exit(1);
+    }
+
     // if (!func) {
     //     // Search for a builtin
     //     if (strcmp(node->name, "return") == 0) {
@@ -247,11 +271,16 @@ ast_t* VisitCall(visitor_t* self, astCall_t* node, scope_t* scope) {
     //     error_visitor_undefined(node->name);
     // }
 
-    // for (size_t i = 0; i < node->value->children->size; ++i) {
-    //     Visit(self, node->value->children->items[i], scope);
-    // }
+    for (size_t i = 0; i < node->arguments->children->size; ++i) {
+        node->arguments->children->items[i] = Visit(self, (ast_t*) node->arguments->children->items[i], scope, false);
+    }
 
-    // node->base.dtypeInfo = func->returnTypeInfo;
+    for (size_t i = 0; i < node->arguments->children->size; ++i) {
+        node->arguments->children->items[i] = Visit(self, (ast_t*) node->arguments->children->items[i], scope, false);
+    }
+
+    node->base.dtypeInfo = func->dtypeReturnInfo;
+    // printf("return type = %s, %lld\n", dTypeToStr(func->returnTypeInfo.dtype), func->returnTypeInfo.ptrCount);
 
     return (ast_t*) node;
 }
@@ -328,5 +357,13 @@ ast_t* VisitUnaryOp(visitor_t* self, astUnaryOp_t* node, scope_t* scope) {
     }
 
     node->value = Visit(self, node->value, scope, false);
+    return (ast_t*) node;
+}
+
+ast_t* VisitUnaryStatement(visitor_t* self, astUnaryStatement_t* node, scope_t* scope) {
+    return (ast_t*) node;
+}
+
+ast_t* VisitConditionalStatement(visitor_t* self, astConditionalStatement_t* node, scope_t* scope) {
     return (ast_t*) node;
 }

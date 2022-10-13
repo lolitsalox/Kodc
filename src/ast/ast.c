@@ -16,6 +16,9 @@ void Ast(ast_t* self, astType_t type) {
     self->dtypeInfo.dtype = DTYPE_UNKNOWN;
     self->dtypeInfo.ptrCount = 0;
 
+    self->dtypeReturnInfo.dtype = DTYPE_UNKNOWN;
+    self->dtypeReturnInfo.ptrCount = 0;
+
     self->Print = AstPrint;
 }
 
@@ -44,6 +47,8 @@ char* astTypeToStr(astType_t type) {
         case AST_STRING:        return "AST_STRING";
         case AST_BIN_OP:        return "AST_BIN_OP";
         case AST_UNARY_OP:      return "AST_UNARY_OP";
+        case AST_UNARY_STATEMENT:           return "AST_UNARY_STATEMENT";
+        case AST_CONDITIONAL_STATEMENT:     return "AST_CONDITIONAL_STATEMENT";
         default:                return "AST_UNKNOWN";
     }
 }

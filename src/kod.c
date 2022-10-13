@@ -13,7 +13,7 @@ void kod_compile(char* src) {
     parser_t* parser = newParser(lexer);
     
     ast_t* root = parser->Parse(parser);
-    root->Print(root, 0);
+    // root->Print(root, 0);
 
     visitor_t* visitor = newVisitor();
     visitor->Visit(visitor, root, visitor->globalScope, false);

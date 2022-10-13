@@ -466,7 +466,7 @@ ast_t* ParseFactor(parser_t* self) {
                 free(func->body);
                 func->body = (astCompound_t*) ParseBlock(self);
                 if (expectingFunction)
-                    func->returnTypeInfo = dtypeInfo;
+                    func->base.base.dtypeReturnInfo = dtypeInfo;
 
                 return (ast_t*) func;
             }
