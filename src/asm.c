@@ -207,7 +207,18 @@ static void gen_assignment(const astAssignment_t* ast, bool isRoot) {
         if (right->base.type == AST_STRING) {
             size_t size = strlen(right->value);
             for (size_t i = 0; i < size; ++i) {
-                appendToData((char[]){'\'', right->value[i], '\'', ',', ' ', 0});
+                if (right->value[i] == '\\' && i < size - 1) {
+                    switch (right->value[++i]) {
+                        case 'n':
+                            appendToData((char[]){'1', '0', ',', 0});
+                            break;
+                        default: 
+                            printf("[Assembly front-end]: TODO: \\%c is not supported.\n", right->value[i]);
+                            exit(1);
+                    }
+                    continue;
+                }
+                appendToData((char[]){'\'', right->value[i], '\'', ',', 0});
             }
             appendToData("0\n");
             return;
@@ -222,6 +233,7 @@ static void gen_assignment(const astAssignment_t* ast, bool isRoot) {
 
     switch (right->type) {
         case AST_INT:
+            
             break;
 
         case AST_STRING:
